@@ -122,10 +122,10 @@ async fn response_body(response: &web_sys::Response) -> Result<Vec<u8>> {
     let array_buffer = JsFuture::from(
         response
             .array_buffer()
-            .map_err(|error| Error::JsError(error))?,
+            .map_err(|error| Error::JsError(format!("{error:?}")))?,
     )
     .await
-    .map_err(|error| Error::JsError(error))?;
+    .map_err(|error| Error::JsError(format!("{error:?}")))?;
 
     let uint8_array = js_sys::Uint8Array::new(&array_buffer);
 
@@ -149,14 +149,16 @@ async fn fetch_base(
     }
 
     let js_request = web_sys::Request::new_with_str_and_init(url, &opts)
-        .map_err(|error| Error::JsError(error))?;
+        .map_err(|error| Error::JsError(format!("{error:?}")))?;
 
     let window = web_sys::window().unwrap();
     let response = JsFuture::from(window.fetch_with_request(&js_request))
         .await
-        .map_err(|error| Error::JsError(error))?;
+        .map_err(|error| Error::JsError(format!("{error:?}")))?;
 
-    let response: web_sys::Response = response.dyn_into().map_err(|error| Error::JsError(error))?;
+    let response: web_sys::Response = response
+        .dyn_into()
+        .map_err(|error| Error::JsError(format!("{error:?}")))?;
 
     Ok(response)
 }

@@ -83,5 +83,5 @@ pub enum Error {
 
     #[cfg(target_arch = "wasm32")]
     #[error("JS error")]
-    JsError(wasm_bindgen::JsValue),
+    JsError(String),
 }
